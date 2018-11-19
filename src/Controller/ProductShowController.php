@@ -12,7 +12,7 @@ class ProductShowController extends AbstractController
     /**
      * @Route("/product/{id}", name="product_show")
      */
-    public function show()
+    public function show($id)
     {
             $product = $this->getDoctrine()
             ->getRepository(Product::class)
