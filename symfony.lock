@@ -1,4 +1,10 @@
 {
+    "container-interop/container-interop": {
+        "version": "1.2.0"
+    },
+    "dflydev/dot-access-data": {
+        "version": "v1.1.0"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -83,8 +89,26 @@
     "fig/link-util": {
         "version": "1.0.0"
     },
+    "guzzlehttp/guzzle": {
+        "version": "6.3.3"
+    },
+    "guzzlehttp/promises": {
+        "version": "v1.3.1"
+    },
+    "guzzlehttp/psr7": {
+        "version": "1.4.2"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
+    },
+    "jms/metadata": {
+        "version": "1.7.0"
+    },
+    "jms/parser-lib": {
+        "version": "1.0.0"
+    },
+    "jms/serializer": {
+        "version": "1.13.0"
     },
     "monolog/monolog": {
         "version": "1.24.0"
@@ -95,6 +119,9 @@
     "ocramius/proxy-manager": {
         "version": "2.1.1"
     },
+    "phpcollection/phpcollection": {
+        "version": "0.5.0"
+    },
     "phpdocumentor/reflection-common": {
         "version": "1.0.1"
     },
@@ -104,11 +131,17 @@
     "phpdocumentor/type-resolver": {
         "version": "0.4.0"
     },
+    "phpoption/phpoption": {
+        "version": "1.5.0"
+    },
     "psr/cache": {
         "version": "1.0.1"
     },
     "psr/container": {
         "version": "1.0.0"
+    },
+    "psr/http-message": {
+        "version": "1.0.1"
     },
     "psr/link": {
         "version": "1.0.0"
@@ -127,6 +160,12 @@
             "version": "5.2",
             "ref": "fb7e19da7f013d0d422fa9bce16f5c510e27609b"
         }
+    },
+    "slince/di": {
+        "version": "2.0.0"
+    },
+    "slince/shopify-api-php": {
+        "version": "2.1.2"
     },
     "swiftmailer/swiftmailer": {
         "version": "v6.1.3"
