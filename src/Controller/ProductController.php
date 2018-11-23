@@ -21,6 +21,7 @@ use GuzzleHttp\Client as ClientGuz;
 use GuzzleHttp\Psr7\Response as ResponseGuz;
 
 use App\Service\FilterProducts;
+use App\Service\SaveMetafields;
 
 
 class ProductController extends AbstractController
@@ -30,75 +31,22 @@ class ProductController extends AbstractController
      * @Route("/product", name="product")
      */
 
-    public function new(FilterProducts $filterProducts)
+    public function new(FilterProducts $filterProducts, Request $request, SaveMetafields $saveMetafields)
 
     {
-        $responseFilterProducts = $filterProducts->getAllProducts();
-    }
 
+        $responseFilterProducts = $filterProducts->getAllProducts($request);
 
-    public function index()
-    {
-        
-        //ZAPISYWANIE DO METAFIELDS
-        $raw = json_encode(array (
-            'order' => 
-            array (
-              'tags' => 'wizard',
-              'customer' => 
-              array (
-                'id' => 915908919353,
-              ),
-              'line_items' => 
-              array (
-                0 => 
-                array (
-                  'id' => 1816216830009,
-                  'title' => 'Basic Snapback Monochrome',
-                  'price' => 0,
-                  'properties' => 
-                  array (
-                    'id' => 1816216830009,
-                    'title' => 'Basic Snapback Monochrome',
-                    'handle' => 'basic-snapback-monochrome',
-                    'image' => 'https://cdn.shopify.com/s/files/1/0130/7181/0617/products/CB610_0033.jpg?v=1541612224',
-                    'price' => '2.73',
-                  ),
-                ),
-              ),
-              'total_tax' => 0,
-              'currency' => 'EUR',
-            ),
-        ));
-        $data = $serializer->serialize($raw, "json");
-        // var_dump($data);
+        $response = new Response(
+            $responseFilterProducts,
+            Response::HTTP_OK,
+            array('content-type' => 'text/html')
+        );
 
-        $client = new ClientGuz();
-
-        $urlPOST = 'https://textil-one-dev.myshopify.com/admin/orders.json';
-
-        $request1= $client->post($urlPOST, [
-
-            'headers' => ['Content-Type' => 'application/json'],
-
-            'auth' => ['e34e44297a9aec24a869b64147e0b17e', 'f17acfadd7a7528e00c70690e6fd452e'],
-
-            'body' => $raw
-
-        ]);
-
-        // var_dump($response->getStatusCode());
-
-        $response = new Response($request1->getBody());
-
-        // $response = new Response ($products);
-        // $response->send(); 
-
-        // dump($jsonContent);die;
-
-        // print_r($products);die;
+        $responseMetafields = $saveMetafields->index(json_decode($responseFilterProducts));
 
         return $response;
-
+        
     }
+
 }
