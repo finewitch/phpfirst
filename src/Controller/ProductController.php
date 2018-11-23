@@ -17,6 +17,9 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Slince\Shopify\PrivateAppCredential;
 use Slince\Shopify\Client;
 
+use GuzzleHttp\Client as ClientGuz;
+use GuzzleHttp\Psr7\Response as ResponseGuz;
+
 
 class ProductController extends AbstractController
 {
@@ -36,7 +39,7 @@ class ProductController extends AbstractController
 
         $request = Request::createFromGlobals();
 
-        var_dump($data['produkt_type']);
+        // var_dump($data['produkt_type']);
 
 
         //api,pass,secret
@@ -48,8 +51,8 @@ class ProductController extends AbstractController
 
         $products = $client->getProductManager()->findAll([
 
-            'product_type' => 'Caps & Mützen'
-            // $data['produkt_type'],
+            // 'product_type' => 'Caps & Mützen'
+            $data['produkt_type'],
             
         ]);
 
@@ -69,18 +72,67 @@ class ProductController extends AbstractController
 
         } 
 
-        //ZAPISYWANIE DO METAFIELDS
-
-
-    
+        //RESPONSE
+        
         $filteredProducts = $serializer->serialize($smallProducts, "json");
+        
 
-        $test = 'test';
         $response = new Response(
             $filteredProducts,
             Response::HTTP_OK,
             array('content-type' => 'text/html')
         );
+        
+        //ZAPISYWANIE DO METAFIELDS
+        $raw = json_encode(array (
+            'order' => 
+            array (
+              'tags' => 'wizard',
+              'customer' => 
+              array (
+                'id' => 915908919353,
+              ),
+              'line_items' => 
+              array (
+                0 => 
+                array (
+                  'id' => 1816216830009,
+                  'title' => 'Basic Snapback Monochrome',
+                  'price' => 0,
+                  'properties' => 
+                  array (
+                    'id' => 1816216830009,
+                    'title' => 'Basic Snapback Monochrome',
+                    'handle' => 'basic-snapback-monochrome',
+                    'image' => 'https://cdn.shopify.com/s/files/1/0130/7181/0617/products/CB610_0033.jpg?v=1541612224',
+                    'price' => '2.73',
+                  ),
+                ),
+              ),
+              'total_tax' => 0,
+              'currency' => 'EUR',
+            ),
+        ));
+        $data = $serializer->serialize($raw, "json");
+        // var_dump($data);
+
+        $client = new ClientGuz();
+
+        $urlPOST = 'https://textil-one-dev.myshopify.com/admin/orders.json';
+
+        $request1= $client->post($urlPOST, [
+
+            'headers' => ['Content-Type' => 'application/json'],
+
+            'auth' => ['e34e44297a9aec24a869b64147e0b17e', 'f17acfadd7a7528e00c70690e6fd452e'],
+
+            'body' => $raw
+
+        ]);
+
+        // var_dump($response->getStatusCode());
+
+        $response = new Response($request1->getBody());
 
         // $response = new Response ($products);
         // $response->send(); 
