@@ -79,7 +79,7 @@ class SaveMetafields
 
         $response = new Response($request->getStatusCode());
 
-        var_dump($request->getStatusCode());
+        // var_dump($request->getStatusCode());
         // $response = new Response ($products);
         // $response->send(); 
 
