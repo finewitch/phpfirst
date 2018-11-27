@@ -26,7 +26,7 @@ class FilterProducts
 
 
 
-    public function filterProducts($products, $branch, $tag, $extraParam){
+    public function filterProducts($products, $ProductBranch, $ProductTag, $extraParam){
         
         $smallProducts=[];
 
@@ -36,15 +36,16 @@ class FilterProducts
             
                 $tags = $value->getTags();
     
-                if(strpos($tags, $branch) !== false){
+                if(strpos($tags, $ProductBranch) !== false){
                     
                     $product  = [
-                        'id' => $value->getId(),
+                        'variant_id' => $value->getId(),
                         'title' => $value->getTitle(),
                         'handle' => $value->getHandle(),
                         'image' => $value->getImage()->getSrc(),
                         'price' => $value->getVariants()[0]->getPrice(),
-                        'tags' => $value->getTags()
+                        'tags' => $value->getTags(),
+                        'quantity' => 1
                     ];
                     array_push($smallProducts, $product);
                 }
@@ -58,15 +59,16 @@ class FilterProducts
                 
                 $tags = $value->getTags();
                 
-                if(strpos($tags, $branch) !== false && strpos($tags, $tag) !== false){
+                if(strpos($tags, $ProductBranch) !== false && strpos($tags, $ProductTag) !== false){
                     
                     $smallProducts[] = [
-                        'id' => $value->getId(),
+                        'variant_id' => $value->getId(),
                         'title' => $value->getTitle(),
                         'handle' => $value->getHandle(),
                         'image' => $value->getImage()->getSrc(),
                         'price' => $value->getVariants()[0]->getPrice(),
-                        'tags' => $value->getTags()
+                        'tags' => $value->getTags(),
+                        'quantity' => 1
                     ];
                 }
                 
@@ -74,7 +76,6 @@ class FilterProducts
         }
             
         $smallProducts = array_slice($smallProducts, 0,3);
-            
         return $smallProducts;
     }
 
@@ -88,8 +89,9 @@ class FilterProducts
         $serializer = new Serializer($normalizers, $encoders);
 
         $data = json_decode($request->getContent(), true);
-        // $ProductType = $data['produkt_type'];
-        // $ProductBranch = $data['branch'];
+        $ProductType = $data['produkt_type'];
+        $ProductBranch = $data['branch'];
+        $ProductTag = $data['tag'];
 
 
         $request = Request::createFromGlobals();
@@ -101,25 +103,24 @@ class FilterProducts
 
         $products = $client->getProductManager()->findAll([
 
-            'product_type' => 'Caps & Mützen',
+            'product_type' => $ProductType,
             
         ]); 
 
         $customerId = ['customer_id' => $data['customer_id']];
 
 
-        $branch = 'Gastronomie';
-        $tag = 'test';
 
 
         //TRY TO  FIND MATCH WITH BOTH
-        $smallProducts = self::filterProducts($products, $branch, $tag, $extraParam='all');
+        $smallProducts = self::filterProducts($products, $ProductBranch, $ProductTag, $extraParam='all');
 
         if(count($smallProducts) <= 2){
             //INDLUDE ONLY PRODUKT TYPE AND BRANCH
-            $smallProducts = self::filterProducts($products, $branch, $tag, $extraParam='branch');
+            $smallProducts = self::filterProducts($products, $ProductBranch, $ProductTag, $extraParam='branch');
 
         }
+        var_dump($smallProducts);
 
 
             // foreach($smallProducts as $product){
@@ -135,8 +136,11 @@ class FilterProducts
             // var_dump($smallProducts, 'ARAJKA DWA');
 
             
-        $wizardData= array_merge($smallProducts, $customerId);
-
+        //$wizardData= array_merge($smallProducts, $customerId);
+                $wizardData = [
+                    'products' => $smallProducts,
+                    'customer_id' => $customerId
+                ];
         //RESPONSE
         
         $filteredProducts = $serializer->serialize($wizardData, "json");

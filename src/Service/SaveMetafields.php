@@ -28,6 +28,8 @@ class SaveMetafields
         $serializer = new Serializer($normalizers, $encoders);
         
 
+        // var_dump($responseFilterProducts);
+
         //ZAPISYWANIE DO METAFIELDS
         $raw = json_encode(array (
             'order' => 
@@ -35,31 +37,14 @@ class SaveMetafields
               'tags' => ['wizard'],
               'customer' => 
               array (
-                'id' => $responseFilterProducts->customer_id,
+                'id' => $responseFilterProducts->customer_id->customer_id,
               ),
-              'line_items' => 
-              array (
-                0 => 
-                array (
-                  'id' => 1816216830009,
-                  'title' => 'Basic Snapback Monochrome',
-                  'price' => 0,
-                  'properties' => 
-                  array (
-                    'id' => 1816216830009,
-                    'title' => 'Basic Snapback Monochrome',
-                    'handle' => 'basic-snapback-monochrome',
-                    'image' => 'https://cdn.shopify.com/s/files/1/0130/7181/0617/products/CB610_0033.jpg?v=1541612224',
-                    'price' => '2.73',
-                  ),
-                ),
-              ),
+              'line_items' => $responseFilterProducts->products,
               'total_tax' => 0,
               'currency' => 'EUR',
             ),
         ));
         $data = $serializer->serialize($raw, "json");
-        // var_dump($data);
 
         $client = new ClientGuz();
 
@@ -75,17 +60,7 @@ class SaveMetafields
 
         ]);
 
-        // var_dump($response->getStatusCode());
-
         $response = new Response($request->getStatusCode());
-
-        // var_dump($request->getStatusCode());
-        // $response = new Response ($products);
-        // $response->send(); 
-
-        // dump($jsonContent);die;
-
-        // print_r($products);die;
 
         return $response;
 

@@ -32,20 +32,43 @@ class ProductController extends AbstractController
      */
 
     public function new(FilterProducts $filterProducts, Request $request, SaveMetafields $saveMetafields)
-
+// $.get('http://127.0.0.1:8000/product', funct)
     {
+        // try {
+        //     $response = [
+        //         'status' => 'ok',
+        //         'products' => $responseFilterProducts = $filterProducts->getAllProducts($request),
+        //     ];
+        // }
+        // catch (\Exception $e) { 
+        //         $response = [
+        //             'status' => 'error',
+        //             'msg' => $e->getMessage()
+        //         ];
+        // }
+        // if($response['status'] == 'ok') {
+        //     try {
+        //         $responseMetafields = $saveMetafields->index(json_decode($responseFilterProducts));
+        //        }
+        //     catch (\Exception $e) { 
+        //             $response = [
+        //                 'status' => 'error',
+        //                 'msg' => $e->getMessage(),
+        //             ];
+        //     }
+        // }
+            
+        $response = [
+                     'status' => 'ok',
+                     'products' => ''
+             ];
+        
 
-        $responseFilterProducts = $filterProducts->getAllProducts($request);
-
-        $response = new Response(
-            $responseFilterProducts,
+        return new Response(
+            $response,
             Response::HTTP_OK,
             array('content-type' => 'text/html')
         );
-
-        $responseMetafields = $saveMetafields->index(json_decode($responseFilterProducts));
-
-        return $response;
         
     }
 
