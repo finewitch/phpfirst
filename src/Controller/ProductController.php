@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 use Slince\Shopify\PrivateAppCredential;
 use Slince\Shopify\Client;
@@ -32,13 +33,12 @@ class ProductController extends AbstractController
      */
 
     public function new(FilterProducts $filterProducts, Request $request, SaveMetafields $saveMetafields)
-// $.get('http://127.0.0.1:8000/product', funct)
     {
+        $responseProducts = [
+            'status' => 'ok',
+            'products' => $responseFilterProducts = $filterProducts->getAllProducts($request),
+        ];
         // try {
-        //     $response = [
-        //         'status' => 'ok',
-        //         'products' => $responseFilterProducts = $filterProducts->getAllProducts($request),
-        //     ];
         // }
         // catch (\Exception $e) { 
         //         $response = [
@@ -57,18 +57,18 @@ class ProductController extends AbstractController
         //             ];
         //     }
         // }
-            
-        $response = [
-                     'status' => 'ok',
-                     'products' => ''
-             ];
-        
-
-        return new Response(
-            $response,
+        $response = new JsonResponse(
+            $responseProducts,
             Response::HTTP_OK,
             array('content-type' => 'text/html')
         );
+
+        // $response->headers->set("Access-Control-Allow-Origin", "*");
+        // $response->headers->set("Access-Control-Allow-Credentials", "true");
+        // $response->headers->set("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+        // $response->headers->set("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+
+        return $response;
         
     }
 

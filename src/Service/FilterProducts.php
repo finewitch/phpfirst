@@ -26,7 +26,7 @@ class FilterProducts
 
 
 
-    public function filterProducts($products, $ProductBranch, $ProductTag, $extraParam){
+    public function filterProducts($products, $ProductBranch, $ProductTag, $extraParam, $returnItems = 3, $ignoreProducts = []){
         
         $smallProducts=[];
 
@@ -37,7 +37,13 @@ class FilterProducts
                 $tags = $value->getTags();
     
                 if(strpos($tags, $ProductBranch) !== false){
-                    
+
+                    if(in_array($value->getId(), $ignoreProducts)) {
+
+                        continue;
+
+                    }
+
                     $product  = [
                         'variant_id' => $value->getId(),
                         'title' => $value->getTitle(),
@@ -47,10 +53,13 @@ class FilterProducts
                         'tags' => $value->getTags(),
                         'quantity' => 1
                     ];
-                    array_push($smallProducts, $product);
+                    $smallProducts[$value->getId()] = $product;
+                    //array_push($smallProducts, $product);
                 }
     
             }
+            // var_dump($smallProducts , '2');
+
 
         }else{
 
@@ -58,10 +67,12 @@ class FilterProducts
             foreach ($products as $value) {
                 
                 $tags = $value->getTags();
+                // var_dump($tags);
+                // var_dump($value, 'val');
                 
                 if(strpos($tags, $ProductBranch) !== false && strpos($tags, $ProductTag) !== false){
                     
-                    $smallProducts[] = [
+                    $product = [
                         'variant_id' => $value->getId(),
                         'title' => $value->getTitle(),
                         'handle' => $value->getHandle(),
@@ -70,12 +81,17 @@ class FilterProducts
                         'tags' => $value->getTags(),
                         'quantity' => 1
                     ];
+
+                    // var_dump($product, 'MATCH');
+                    array_push($smallProducts, $product);
+
                 }
                 
             }
+            // var_dump($smallProducts , '1');
         }
             
-        $smallProducts = array_slice($smallProducts, 0,3);
+        $smallProducts = array_slice($smallProducts, 0,$returnItems);
         return $smallProducts;
     }
 
@@ -88,10 +104,12 @@ class FilterProducts
         $normalizers = array(new ObjectNormalizer());
         $serializer = new Serializer($normalizers, $encoders);
 
+        //data
         $data = json_decode($request->getContent(), true);
         $ProductType = $data['produkt_type'];
         $ProductBranch = $data['branch'];
         $ProductTag = $data['tag'];
+        $customerId = ['customer_id' => $data['customer_id']];
 
 
         $request = Request::createFromGlobals();
@@ -107,20 +125,20 @@ class FilterProducts
             
         ]); 
 
-        $customerId = ['customer_id' => $data['customer_id']];
-
-
 
 
         //TRY TO  FIND MATCH WITH BOTH
         $smallProducts = self::filterProducts($products, $ProductBranch, $ProductTag, $extraParam='all');
 
         if(count($smallProducts) <= 2){
+            $ignoreProducts = array_keys($smallProducts);
             //INDLUDE ONLY PRODUKT TYPE AND BRANCH
-            $smallProducts = self::filterProducts($products, $ProductBranch, $ProductTag, $extraParam='branch');
-
+            $needItems = 3 - count($smallProducts);
+            $newSmallProducts = self::filterProducts($products, $ProductBranch, $ProductTag, $extraParam='branch', $needItems, $ignoreProducts);
+            $smallProducts = array_merge($smallProducts, $newSmallProducts);    
         }
-        var_dump($smallProducts);
+        // var_dump($smallProducts, '3');
+        // var_dump($smallProducts);
 
 
             // foreach($smallProducts as $product){
