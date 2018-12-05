@@ -24,8 +24,6 @@ use GuzzleHttp\Psr7\Response as ResponseGuz;
 class FilterProducts
 {
 
-
-
     public function filterProducts($products, $ProductBranch, $ProductTag, $extraParam, $returnItems = 3, $ignoreProducts = []){
         
         $smallProducts=[];
@@ -58,7 +56,7 @@ class FilterProducts
                 }
     
             }
-            // var_dump($smallProducts , '2');
+            // var_dump('2', $smallProducts);
 
 
         }else{
@@ -88,7 +86,7 @@ class FilterProducts
                 }
                 
             }
-            // var_dump($smallProducts , '1');
+            // var_dump('TUTEJ', $smallProducts);
         }
             
         $smallProducts = array_slice($smallProducts, 0,$returnItems);
@@ -124,6 +122,9 @@ class FilterProducts
             'product_type' => $ProductType,
             
         ]); 
+        // dump($ProductBranch, $ProductTag, $products);exit;
+
+
 
 
 
@@ -138,23 +139,8 @@ class FilterProducts
             $smallProducts = array_merge($smallProducts, $newSmallProducts);    
         }
         // var_dump($smallProducts, '3');
-        // var_dump($smallProducts);
-
-
-            // foreach($smallProducts as $product){
-            //     array_unique($product);
-            // }
-            // var_dump($smallProducts, 'ARAJKA');
-            // // $arr2 = array_unique($smallProducts, SORT_REGULAR);
-            // foreach($smallProducts as $key=>$value){
-            //     if(!empty($id) && in_array($value['id'],$id)) unset($smallProducts[$key]);  //unset from $array if username already exists
-            //         $id[] = $value['id']; 
-            // }
-
-            // var_dump($smallProducts, 'ARAJKA DWA');
 
             
-        //$wizardData= array_merge($smallProducts, $customerId);
                 $wizardData = [
                     'products' => $smallProducts,
                     'customer_id' => $customerId
