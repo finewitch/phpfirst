@@ -54,7 +54,7 @@ class SaveMetafields
 
             'headers' => ['Content-Type' => 'application/json'],
 
-            'auth' => ['e34e44297a9aec24a869b64147e0b17e', 'f17acfadd7a7528e00c70690e6fd452e'],
+            'auth' => ['token-key', 'token-pass'],
 
             'body' => $raw
 
